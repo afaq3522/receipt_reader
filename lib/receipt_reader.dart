@@ -8,8 +8,10 @@ import 'utils/chat_extractions.dart';
 
 class ReceiptUploader extends StatefulWidget {
   final void Function(Order) onAdd;
+  final String geminiApi;
 
-  const ReceiptUploader({super.key, required this.onAdd});
+  const ReceiptUploader(
+      {super.key, required this.onAdd, required this.geminiApi});
 
   @override
   State<ReceiptUploader> createState() => _ReceiptUploaderState();
@@ -64,7 +66,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
 
     try {
       // Process recognized text to extract the order
-      Order order = await processReceipt(recognizedText.text);
+      Order order = await processReceipt(recognizedText.text, widget.geminiApi);
 
       setState(() {
         _extractedText = recognizedText.text;

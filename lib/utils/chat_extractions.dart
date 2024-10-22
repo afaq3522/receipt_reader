@@ -6,11 +6,12 @@ import 'package:receipt_reader/models/order.dart';
 
 Future<Order> processReceipt(
   String receiptText,
+  String api,
 ) async {
   try {
     final model = GenerativeModel(
       model: 'gemini-1.5-flash-latest',
-      apiKey: 'AIzaSyCd-Y2aqD_C8XOSZPX14ySsozyMgPMicvk',
+      apiKey: api,
     );
 
     String prompt = """
