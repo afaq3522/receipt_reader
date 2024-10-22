@@ -10,8 +10,11 @@ class ReceiptUploader extends StatefulWidget {
   final void Function(Order) onAdd;
   final String geminiApi;
 
-  const ReceiptUploader(
-      {super.key, required this.onAdd, required this.geminiApi});
+  const ReceiptUploader({
+    Key? key,
+    required this.onAdd,
+    required this.geminiApi,
+  }) : super(key: key);
 
   @override
   State<ReceiptUploader> createState() => _ReceiptUploaderState();
@@ -34,9 +37,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   Future<void> _getImageFromCamera() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.camera);
     if (pickedImage != null) {
-      setState(() {
-        _receiptImage = pickedImage;
-      });
+      setState(() => _receiptImage = pickedImage);
       await _processReceiptImage();
     }
   }
@@ -44,9 +45,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   Future<void> _getImageFromGallery() async {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      setState(() {
-        _receiptImage = pickedImage;
-      });
+      setState(() => _receiptImage = pickedImage);
       await _processReceiptImage();
     }
   }
@@ -60,104 +59,142 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
       _extractedOrder = null;
     });
 
-    // Convert the picked image into InputImage for text recognition
-    final inputImage = InputImage.fromFilePath(_receiptImage!.path);
-    final recognizedText = await _textRecognizer.processImage(inputImage);
-
     try {
-      // Process recognized text to extract the order
-      Order order = await processReceipt(recognizedText.text, widget.geminiApi);
+      final inputImage = InputImage.fromFilePath(_receiptImage!.path);
+      final recognizedText = await _textRecognizer.processImage(inputImage);
+      final order = await processReceipt(recognizedText.text, widget.geminiApi);
 
       setState(() {
         _extractedText = recognizedText.text;
         _extractedOrder = order;
       });
     } catch (e) {
-      setState(() {
-        _extractedText = 'Error: Could not process receipt';
-      });
+      setState(() => _extractedText = 'Error: Could not process receipt');
+    } finally {
+      setState(() => _isProcessing = false);
     }
-
-    setState(() {
-      _isProcessing = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Upload Receipt'),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildImagePreview(),
+          const SizedBox(height: 16),
+          _buildProcessingSection(),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_receiptImage != null)
-              Image.file(
-                File(_receiptImage!.path),
-                height: 200,
-                fit: BoxFit.cover,
-              )
-            else
-              const Placeholder(
-                fallbackHeight: 200,
-                child: Center(child: Text('No image selected')),
-              ),
-            const SizedBox(height: 16),
-            if (_isProcessing) ...[
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              const Text('Processing receipt...')
-            ] else if (_extractedText != null && _extractedOrder != null) ...[
-              const Text('Extracted Receipt Data:'),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _extractedOrder?.items.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final item = _extractedOrder!.items[index];
-                    return ListTile(
-                      title: Text('${item.name} (x${item.quantity})'),
-                      trailing: Text(item.price.toStringAsFixed(2)),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text('Subtotal: ${_extractedOrder!.subtotal.toStringAsFixed(2)}'),
-              Text('Tax: ${_extractedOrder!.tax.toStringAsFixed(2)}'),
-              Text('Total: ${_extractedOrder!.total.toStringAsFixed(2)}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Invoke the onAdd callback when the user confirms
-                  widget.onAdd(_extractedOrder!);
-                },
-                child: const Text('Add'),
-              )
-            ] else ...[
-              const Text('Please upload a receipt to extract data'),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _getImageFromCamera,
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Take Picture'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _getImageFromGallery,
-                  icon: const Icon(Icons.photo),
-                  label: const Text('Upload Image'),
-                ),
-              ],
+    );
+  }
+
+  Widget _buildImagePreview() {
+    return _receiptImage != null
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(
+              File(_receiptImage!.path),
+              height: 200,
+              fit: BoxFit.cover,
             ),
-          ],
+          )
+        : Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text('No image selected'),
+            ),
+          );
+  }
+
+  Widget _buildProcessingSection() {
+    if (_isProcessing) {
+      return const Column(
+        children: [
+          Center(child: CircularProgressIndicator()),
+          SizedBox(height: 16),
+          Text('Processing receipt...'),
+        ],
+      );
+    }
+
+    if (_extractedText != null && _extractedOrder != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Extracted Receipt Data:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          _buildOrderItemsList(),
+          const SizedBox(height: 16),
+          _buildOrderSummary(),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => widget.onAdd(_extractedOrder!),
+            child: const Text('Add Order'),
+          ),
+        ],
+      );
+    }
+
+    return const Text('Please upload a receipt to extract data');
+  }
+
+  Widget _buildOrderItemsList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _extractedOrder?.items.length ?? 0,
+      itemBuilder: (context, index) {
+        final item = _extractedOrder!.items[index];
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(item.name),
+          subtitle: Text('Quantity: ${item.quantity}'),
+          trailing: Text('\$${item.price.toStringAsFixed(2)}'),
+        );
+      },
+    );
+  }
+
+  Widget _buildOrderSummary() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Subtotal: \$${_extractedOrder!.subtotal.toStringAsFixed(2)}'),
+        Text('Tax: \$${_extractedOrder!.tax.toStringAsFixed(2)}'),
+        Text(
+          'Total: \$${_extractedOrder!.total.toStringAsFixed(2)}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton.icon(
+          onPressed: _getImageFromCamera,
+          icon: const Icon(Icons.camera_alt),
+          label: const Text('Take Picture'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _getImageFromGallery,
+          icon: const Icon(Icons.photo),
+          label: const Text('Upload Image'),
+        ),
+      ],
     );
   }
 }
