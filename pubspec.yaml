@@ -8,7 +8,7 @@ issue_tracker: https://github.com/KanyantaM/receipt_reader/issues # GitHub issue
 
 environment:
   sdk: '>=3.5.3 <4.0.0' # Ensure compatibility with Dart SDK versions
-  flutter: ">=2.5.0 <4.0.0" # Flutter SDK compatibility
+  flutter: ">=2.5.0" # Flutter SDK compatibility
 
 dependencies:
   flutter:
