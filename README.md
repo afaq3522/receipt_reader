@@ -71,7 +71,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
           );
         },
         geminiApi:
-            'AIzaSyCd-Y2aqD_C8XOSZPX14ySsozyMgPMicvk', // Replace with your API URL
+            '************************************************', // Replace with your API URL
         actionButtonStyle: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue, // Button color
           textStyle: const TextStyle(fontSize: 16),
