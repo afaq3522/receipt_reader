@@ -20,7 +20,7 @@ class ReceiptUploader extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
 
   const ReceiptUploader({
-    Key? key,
+    super.key,
     required this.onAdd,
     required this.geminiApi,
     this.actionButtonStyle,
@@ -31,7 +31,7 @@ class ReceiptUploader extends StatefulWidget {
     this.processingMessage,
     this.customProcessingIndicator,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   State<ReceiptUploader> createState() => _ReceiptUploaderState();
