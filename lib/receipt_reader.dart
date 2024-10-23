@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,10 +9,28 @@ class ReceiptUploader extends StatefulWidget {
   final void Function(Order) onAdd;
   final String geminiApi;
 
+  // Customization parameters
+  final ButtonStyle? actionButtonStyle;
+  final TextStyle? extractedDataTextStyle;
+  final TextStyle? orderSummaryTextStyle;
+  final double? imagePreviewHeight;
+  final double? imagePreviewBorderRadius;
+  final String? processingMessage;
+  final Widget? customProcessingIndicator;
+  final EdgeInsetsGeometry? padding;
+
   const ReceiptUploader({
     Key? key,
     required this.onAdd,
     required this.geminiApi,
+    this.actionButtonStyle,
+    this.extractedDataTextStyle,
+    this.orderSummaryTextStyle,
+    this.imagePreviewHeight,
+    this.imagePreviewBorderRadius,
+    this.processingMessage,
+    this.customProcessingIndicator,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -78,7 +95,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: widget.padding ?? const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -95,18 +112,20 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   Widget _buildImagePreview() {
     return _receiptImage != null
         ? ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius:
+                BorderRadius.circular(widget.imagePreviewBorderRadius ?? 8),
             child: Image.file(
               File(_receiptImage!.path),
-              height: 200,
+              height: widget.imagePreviewHeight ?? 200,
               fit: BoxFit.cover,
             ),
           )
         : Container(
-            height: 200,
+            height: widget.imagePreviewHeight ?? 200,
             decoration: BoxDecoration(
               color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius:
+                  BorderRadius.circular(widget.imagePreviewBorderRadius ?? 8),
             ),
             child: const Center(
               child: Text('No image selected'),
@@ -116,11 +135,11 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
 
   Widget _buildProcessingSection() {
     if (_isProcessing) {
-      return const Column(
+      return Column(
         children: [
-          Center(child: CircularProgressIndicator()),
-          SizedBox(height: 16),
-          Text('Processing receipt...'),
+          widget.customProcessingIndicator ?? const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(widget.processingMessage ?? 'Processing receipt...'),
         ],
       );
     }
@@ -129,9 +148,10 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Extracted Receipt Data:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: widget.extractedDataTextStyle ??
+                const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           _buildOrderItemsList(),
@@ -140,6 +160,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => widget.onAdd(_extractedOrder!),
+            style: widget.actionButtonStyle,
             child: const Text('Add Order'),
           ),
         ],
@@ -170,29 +191,40 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Subtotal: \$${_extractedOrder!.subtotal.toStringAsFixed(2)}'),
-        Text('Tax: \$${_extractedOrder!.tax.toStringAsFixed(2)}'),
+        Text(
+          'Subtotal: \$${_extractedOrder!.subtotal.toStringAsFixed(2)}',
+          style: widget.orderSummaryTextStyle,
+        ),
+        Text(
+          'Tax: \$${_extractedOrder!.tax.toStringAsFixed(2)}',
+          style: widget.orderSummaryTextStyle,
+        ),
         Text(
           'Total: \$${_extractedOrder!.total.toStringAsFixed(2)}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: widget.orderSummaryTextStyle
+                  ?.copyWith(fontWeight: FontWeight.bold) ??
+              const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
   Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Wrap(
+      spacing: 10.0, // Spacing between the buttons
+      alignment: WrapAlignment.center,
       children: [
         ElevatedButton.icon(
           onPressed: _getImageFromCamera,
           icon: const Icon(Icons.camera_alt),
-          label: const Text('Take Picture'),
+          label: const Text('Camera'),
+          style: widget.actionButtonStyle,
         ),
         ElevatedButton.icon(
           onPressed: _getImageFromGallery,
           icon: const Icon(Icons.photo),
-          label: const Text('Upload Image'),
+          label: const Text('Upload'),
+          style: widget.actionButtonStyle,
         ),
       ],
     );

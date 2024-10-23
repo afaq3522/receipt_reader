@@ -1,6 +1,6 @@
 name: receipt_reader
 description: A Flutter package for reading and processing receipts using Google ML Kit.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/KanyantaM/receipt_reader # Add your GitHub repo or website here
 
 repository: https://github.com/KanyantaM/receipt_reader # Update with your GitHub repo
