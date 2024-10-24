@@ -72,7 +72,7 @@ class Item {
         name: json['name'],
         quantity: json['quantity'].toInt(),
         price: json['price'].toDouble(),
-        category: json['category'].toString().toUpperCase());
+        category: json['category'].toString().toLowerCase());
   }
 
   // Convert Item object to JSON
@@ -81,7 +81,7 @@ class Item {
       'name': name,
       'quantity': quantity,
       'price': price,
-      'category': category.toUpperCase()
+      'category': category.toLowerCase()
     };
   }
 
@@ -96,7 +96,7 @@ class Item {
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
-      category: (category ?? this.category).toUpperCase(),
+      category: (category ?? this.category).toLowerCase(),
     );
   }
 

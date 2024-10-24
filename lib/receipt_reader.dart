@@ -196,12 +196,11 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
             children: [
               Text(
                 'Couldn\'t read receipt: $_extractedText',
-                style: widget.extractedDataTextStyle ??
-                    const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // White text to contrast with the background
-                    ),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors
+                      .white, // White text to contrast with the background
+                ),
                 textAlign: TextAlign.center, // Center-align the text
               ),
               const SizedBox(
@@ -211,6 +210,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
                   setState(() {
                     _extractedText = null;
                     _extractedOrder = null;
+                    _receiptImage = null;
                   });
                 }, // Your try again logic here
                 style: ElevatedButton.styleFrom(

@@ -1,4 +1,3 @@
-## 0.0.4
+## 0.0.5
 
-- **`listOfCategories`** (optional): User defined list of categories to put items into categories.
-- **Error Handling added**: When a receipt couldn't be read an error message is returned
+- **Error Handling added**: Improving the error handling functionality and look

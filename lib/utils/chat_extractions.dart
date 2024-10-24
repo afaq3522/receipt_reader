@@ -18,7 +18,7 @@ Future<Order> processReceipt(
     final List<String> formattedList = ['UNKOWN'];
 
     for (String category in categories) {
-      formattedList.add(category.toUpperCase());
+      formattedList.add(category.toLowerCase());
     }
 
     String prompt = """

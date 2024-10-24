@@ -123,8 +123,8 @@ Once a receipt is processed, the extracted data is returned as an `Order` object
 ```dart
 Order(
   items: [
-    OrderItem(name: 'Item 1', quantity: 2, price: 10.00, category: 'category 1'),
-    OrderItem(name: 'Item 2', quantity: 1, price: 5.50, category: 'category 2'),
+    OrderItem(name: 'Item 1', quantity: 2, price: 10.00, category: 'category'),
+    OrderItem(name: 'Item 2', quantity: 1, price: 5.50, category: 'category'),
   ],
   subtotal: 25.50,
   tax: 2.55,
