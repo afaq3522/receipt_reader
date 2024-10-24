@@ -99,7 +99,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
       });
     } catch (e) {
       setState(() {
-        _extractedText = 'Error: Could not process receipt';
+        _extractedText = e.toString();
         _extractedOrder = null;
       });
     } finally {
