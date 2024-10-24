@@ -72,7 +72,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
         },
         geminiApi:
             '************************************************', // Replace with your API URL
-        listOfCategories: <String>["FOOD", "CLOTHES"]
+        listOfCategories: <String>["food", "clothes"],
         actionButtonStyle: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue, // Button color
           textStyle: const TextStyle(fontSize: 16),
@@ -90,6 +90,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
     );
   }
 }
+
 
 ```
 

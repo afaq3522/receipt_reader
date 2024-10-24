@@ -1,3 +1,4 @@
 ## 0.0.5
 
-- **Error Handling added**: Improving the error handling functionality and look
+- **Documentation**: Added Dartdoc-style documentation, improving the readability and usability of the widget.
+  

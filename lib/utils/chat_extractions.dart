@@ -1,9 +1,45 @@
-// Function to process the receipt text and return structured JSON
 import 'dart:convert';
-
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:receipt_reader/models/order.dart';
 
+/// Processes a receipt text using the Google Generative AI API and returns
+/// the structured [Order] object.
+///
+/// This function sends the receipt text to the AI model, which extracts items,
+/// their quantity, price, subtotal, tax, and total. It also assigns categories
+/// to each item based on the provided list.
+///
+/// The AI expects the data in the following JSON format:
+/// ```json
+/// {
+///   "items": [
+///     {
+///       "name": "Item Name",
+///       "quantity": Quantity,
+///       "price": Price,
+///       "category": "category"
+///     },
+///     ...
+///   ],
+///   "subtotal": Subtotal,
+///   "tax": Tax,
+///   "total": Total
+/// }
+/// ```
+///
+/// If the response does not contain valid JSON or an error occurs during the
+/// request, an exception is thrown.
+///
+/// Parameters:
+/// - [receiptText]: The raw text from the receipt to be processed.
+/// - [api]: The API key for accessing the Google Generative AI model.
+/// - [categories]: A list of categories to classify the items.
+///
+/// Returns:
+/// A future that resolves to an [Order] object containing the extracted information.
+///
+/// Throws:
+/// - [Exception] if there is an error processing the receipt or the API response is invalid.
 Future<Order> processReceipt(
   String receiptText,
   String api,
@@ -15,7 +51,7 @@ Future<Order> processReceipt(
       apiKey: api,
     );
 
-    final List<String> formattedList = ['UNKOWN'];
+    final List<String> formattedList = ['unkown'];
 
     for (String category in categories) {
       formattedList.add(category.toLowerCase());
@@ -23,7 +59,7 @@ Future<Order> processReceipt(
 
     String prompt = """
       Extract the items, their quantity, price, subtotal, total, and tax from the following receipt:
-      $receiptText And give each item a category strictly from this list of category's $categories 
+      $receiptText And give each item a category strictly from this list of categories $categories 
 
       Please return the response in the following JSON format:
       ```json
@@ -32,7 +68,7 @@ Future<Order> processReceipt(
           {
             "name": "Item Name",
             "quantity": Quantity,
-            "price": Price
+            "price": Price,
             "category": "category"
           },
           ...
@@ -41,8 +77,7 @@ Future<Order> processReceipt(
         "tax": Tax,
         "total": Total
       }
-      ```
-    """;
+      ```""";
 
     final content = [Content.text(prompt)];
     final response = await model.generateContent(content);
@@ -66,6 +101,19 @@ Future<Order> processReceipt(
   }
 }
 
+/// Extracts a valid JSON string from a block of text.
+///
+/// This function looks for a JSON block between ` ```json ` and ` ``` ` markers
+/// and attempts to extract and clean the JSON content.
+///
+/// Parameters:
+/// - [text]: The raw text containing the JSON.
+///
+/// Returns:
+/// A valid JSON string extracted from the input text.
+///
+/// Throws:
+/// - [FormatException] if valid JSON is not found within the text.
 String extractJsonFromText(String text) {
   // Find the position of the first ```json``` block
   final jsonStart = text.indexOf('```json');

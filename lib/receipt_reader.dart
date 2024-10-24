@@ -5,20 +5,54 @@ import 'package:image_picker/image_picker.dart';
 import 'models/order.dart';
 import 'utils/chat_extractions.dart';
 
+/// A widget that handles the uploading of receipt images and processing the
+/// extracted data to generate an `Order` object.
+///
+/// This widget allows customization of the user interface elements, including
+/// styles for buttons, text, and error handling. It also integrates with
+/// Gemini API to process the receipt data.
 class ReceiptUploader extends StatefulWidget {
+  /// Callback function to handle the `Order` object once the receipt data is processed.
   final void Function(Order) onAdd;
+
+  /// API key for Gemini AI used to extract data from the receipt.
   final String geminiApi;
+
+  /// Optional list of categories that can be used to categorize receipt items.
   final List<String>? listOfCategories;
 
-  // Customization parameters
+  /// Custom style for the action button that triggers receipt processing.
   final ButtonStyle? actionButtonStyle;
+
+  /// Custom text style for displaying extracted data from the receipt.
   final TextStyle? extractedDataTextStyle;
+
+  /// Custom text style for displaying the summary of the processed order.
   final TextStyle? orderSummaryTextStyle;
+
+  /// Optional height for the receipt image preview widget.
   final double? imagePreviewHeight;
+
+  /// Optional border radius for the receipt image preview.
   final double? imagePreviewBorderRadius;
+
+  /// Custom message to be displayed while processing the receipt.
   final String? processingMessage;
+
+  /// Custom widget to be shown as an indicator while the receipt is being processed.
   final Widget? customProcessingIndicator;
+
+  /// Custom padding for the entire widget.
   final EdgeInsetsGeometry? padding;
+
+  /// Custom box decoration for the error message container.
+  final BoxDecoration? errorBoxStyle;
+
+  /// Custom text style for the error message text.
+  final TextStyle? errorTextStyle;
+
+  /// Custom button style for the "Try Again" button shown when an error occurs.
+  final ButtonStyle? errorButtonStyle;
 
   const ReceiptUploader({
     super.key,
@@ -33,6 +67,9 @@ class ReceiptUploader extends StatefulWidget {
     this.processingMessage,
     this.customProcessingIndicator,
     this.padding,
+    this.errorBoxStyle,
+    this.errorTextStyle,
+    this.errorButtonStyle,
   });
 
   @override
@@ -185,22 +222,24 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
         child: Container(
           padding: const EdgeInsets.all(16.0), // Add some padding
           margin: const EdgeInsets.symmetric(horizontal: 20.0),
-          decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent
-                .withOpacity(0.8), // Reddish-orange color
-            borderRadius: BorderRadius.circular(12), // Rounded edges
-          ),
+          decoration: widget.errorBoxStyle ??
+              BoxDecoration(
+                color: Colors.deepOrangeAccent
+                    .withOpacity(0.8), // Reddish-orange color
+                borderRadius: BorderRadius.circular(12), // Rounded edges
+              ),
           child: Column(
             mainAxisSize:
                 MainAxisSize.min, // Make the column only as tall as its content
             children: [
               Text(
                 'Couldn\'t read receipt: $_extractedText',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors
-                      .white, // White text to contrast with the background
-                ),
+                style: widget.errorTextStyle ??
+                    const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors
+                          .white, // White text to contrast with the background
+                    ),
                 textAlign: TextAlign.center, // Center-align the text
               ),
               const SizedBox(
@@ -213,14 +252,15 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
                     _receiptImage = null;
                   });
                 }, // Your try again logic here
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.deepOrangeAccent,
-                  backgroundColor: Colors.white, // Button text color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        8), // Slightly rounded edges for the button
-                  ),
-                ),
+                style: widget.errorButtonStyle ??
+                    ElevatedButton.styleFrom(
+                      foregroundColor: Colors.deepOrangeAccent,
+                      backgroundColor: Colors.white, // Button text color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            8), // Slightly rounded edges for the button
+                      ),
+                    ),
                 child: const Text('Try Again'),
               ),
             ],
