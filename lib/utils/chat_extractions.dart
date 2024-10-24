@@ -7,6 +7,7 @@ import 'package:receipt_reader/models/order.dart';
 Future<Order> processReceipt(
   String receiptText,
   String api,
+  List<String> categories,
 ) async {
   try {
     final model = GenerativeModel(
@@ -14,9 +15,15 @@ Future<Order> processReceipt(
       apiKey: api,
     );
 
+    final List<String> formattedList = ['UNKOWN'];
+
+    for (String category in categories) {
+      formattedList.add(category.toUpperCase());
+    }
+
     String prompt = """
       Extract the items, their quantity, price, subtotal, total, and tax from the following receipt:
-      $receiptText
+      $receiptText And give each item a category strictly from this list of category's $categories 
 
       Please return the response in the following JSON format:
       ```json
@@ -26,6 +33,7 @@ Future<Order> processReceipt(
             "name": "Item Name",
             "quantity": Quantity,
             "price": Price
+            "category": "category"
           },
           ...
         ],

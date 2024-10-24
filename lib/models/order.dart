@@ -58,20 +58,21 @@ class Item {
   String name;
   int quantity;
   double price;
+  String category;
 
-  Item({
-    required this.name,
-    required this.quantity,
-    required this.price,
-  });
+  Item(
+      {required this.name,
+      required this.quantity,
+      required this.price,
+      required this.category});
 
   // Convert JSON to Item object
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      name: json['name'],
-      quantity: json['quantity'].toInt(),
-      price: json['price'].toDouble(),
-    );
+        name: json['name'],
+        quantity: json['quantity'].toInt(),
+        price: json['price'].toDouble(),
+        category: json['category'].toString().toUpperCase());
   }
 
   // Convert Item object to JSON
@@ -80,6 +81,7 @@ class Item {
       'name': name,
       'quantity': quantity,
       'price': price,
+      'category': category.toUpperCase()
     };
   }
 
@@ -88,16 +90,18 @@ class Item {
     String? name,
     int? quantity,
     double? price,
+    String? category,
   }) {
     return Item(
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
+      category: (category ?? this.category).toUpperCase(),
     );
   }
 
   @override
   String toString() {
-    return 'Item(name: $name, quantity: $quantity, price: $price)';
+    return 'Item(name: $name, quantity: $quantity, price: $price, category: $category)';
   }
 }

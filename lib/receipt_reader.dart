@@ -8,6 +8,7 @@ import 'utils/chat_extractions.dart';
 class ReceiptUploader extends StatefulWidget {
   final void Function(Order) onAdd;
   final String geminiApi;
+  final List<String>? listOfCategories;
 
   // Customization parameters
   final ButtonStyle? actionButtonStyle;
@@ -23,6 +24,7 @@ class ReceiptUploader extends StatefulWidget {
     super.key,
     required this.onAdd,
     required this.geminiApi,
+    this.listOfCategories,
     this.actionButtonStyle,
     this.extractedDataTextStyle,
     this.orderSummaryTextStyle,
@@ -44,6 +46,13 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   String? _extractedText;
   Order? _extractedOrder;
   bool _isProcessing = false;
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _categories = widget.listOfCategories ?? [];
+  }
 
   @override
   void dispose() {
@@ -69,7 +78,6 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
 
   Future<void> _processReceiptImage() async {
     if (_receiptImage == null) return;
-
     setState(() {
       _isProcessing = true;
       _extractedText = null;
@@ -79,14 +87,21 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
     try {
       final inputImage = InputImage.fromFilePath(_receiptImage!.path);
       final recognizedText = await _textRecognizer.processImage(inputImage);
-      final order = await processReceipt(recognizedText.text, widget.geminiApi);
+      final order = await processReceipt(
+        recognizedText.text,
+        widget.geminiApi,
+        _categories,
+      );
 
       setState(() {
         _extractedText = recognizedText.text;
         _extractedOrder = order;
       });
     } catch (e) {
-      setState(() => _extractedText = 'Error: Could not process receipt');
+      setState(() {
+        _extractedText = 'Error: Could not process receipt';
+        _extractedOrder = null;
+      });
     } finally {
       setState(() => _isProcessing = false);
     }
@@ -164,6 +179,53 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
             child: const Text('Add Order'),
           ),
         ],
+      );
+    } else if (_extractedText != null && _extractedOrder == null) {
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(16.0), // Add some padding
+          margin: const EdgeInsets.symmetric(horizontal: 20.0),
+          decoration: BoxDecoration(
+            color: Colors.deepOrangeAccent
+                .withOpacity(0.8), // Reddish-orange color
+            borderRadius: BorderRadius.circular(12), // Rounded edges
+          ),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min, // Make the column only as tall as its content
+            children: [
+              Text(
+                'Couldn\'t read receipt: $_extractedText',
+                style: widget.extractedDataTextStyle ??
+                    const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors
+                          .white, // White text to contrast with the background
+                    ),
+                textAlign: TextAlign.center, // Center-align the text
+              ),
+              const SizedBox(
+                  height: 12), // Add some space between the text and the button
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _extractedText = null;
+                    _extractedOrder = null;
+                  });
+                }, // Your try again logic here
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.deepOrangeAccent,
+                  backgroundColor: Colors.white, // Button text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        8), // Slightly rounded edges for the button
+                  ),
+                ),
+                child: const Text('Try Again'),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
