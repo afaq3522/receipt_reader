@@ -6,7 +6,7 @@
 
 - Capture receipt images using the camera or select from the gallery.
 - Recognize text from receipts using Google ML Kit's text recognition.
-- Extract structured order information such as items, quantities, prices, and totals.
+- Extract structured order information such as items, quantities, prices, category and totals.
 - Easily integrate extracted order data into your application.
 
 ## Installation
@@ -72,6 +72,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
         },
         geminiApi:
             '************************************************', // Replace with your API URL
+        listOfCategories: <String>["FOOD", "CLOTHES"]
         actionButtonStyle: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue, // Button color
           textStyle: const TextStyle(fontSize: 16),
@@ -112,6 +113,7 @@ Once a receipt is processed, the extracted data is returned as an `Order` object
   - `name`: The name of the item.
   - `quantity`: The quantity of the item.
   - `price`: The price of the item.
+  - `category`: The category of the item.
 - `subtotal`: The subtotal of all items.
 - `tax`: The calculated tax.
 - `total`: The total cost including tax.
@@ -121,8 +123,8 @@ Once a receipt is processed, the extracted data is returned as an `Order` object
 ```dart
 Order(
   items: [
-    OrderItem(name: 'Item 1', quantity: 2, price: 10.00),
-    OrderItem(name: 'Item 2', quantity: 1, price: 5.50),
+    OrderItem(name: 'Item 1', quantity: 2, price: 10.00, category: 'category 1'),
+    OrderItem(name: 'Item 2', quantity: 1, price: 5.50, category: 'category 2'),
   ],
   subtotal: 25.50,
   tax: 2.55,
