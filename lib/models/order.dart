@@ -6,6 +6,8 @@
 /// Example:
 /// ```dart
 /// Order order = Order(
+///   invoiceNumber: vh524245426
+///   paymentMethod: CASH
 ///   items: [
 ///     Item(name: 'Pizza', quantity: 1, price: 10.0, category: 'Food')
 ///   ],
@@ -15,6 +17,15 @@
 /// );
 /// ```
 class Order {
+  /// This is the method used to make the transaction and always in upper case
+  String paymentMethod;
+
+  ///invoice number, this is the unique number of the transaction
+  String invoiceNumber;
+
+  ///The date of the transaction
+  String date;
+
   /// The list of items in the order.
   List<Item> items;
 
@@ -29,6 +40,9 @@ class Order {
 
   /// Creates a new [Order] object with the given [items], [subtotal], [tax], and [total].
   Order({
+    required this.date,
+    required this.invoiceNumber,
+    required this.paymentMethod,
     required this.items,
     required this.subtotal,
     required this.tax,
@@ -55,6 +69,9 @@ class Order {
   /// ```
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
+      date: json['date'],
+      invoiceNumber: json['invoice_number'],
+      paymentMethod: json['payment_method'].toString().toUpperCase(),
       items: (json['items'] as List<dynamic>)
           .map((itemJson) => Item.fromJson(itemJson))
           .toList(),
@@ -73,6 +90,9 @@ class Order {
       'subtotal': subtotal,
       'tax': tax,
       'total': total,
+      'invoice_number': invoiceNumber,
+      'date': date,
+      'payment_method': paymentMethod.toUpperCase(),
     };
   }
 
@@ -85,8 +105,14 @@ class Order {
     double? subtotal,
     double? tax,
     double? total,
+    String? invoiceNumber,
+    String? date,
+    String? paymentMethod,
   }) {
     return Order(
+      date: date ?? this.date,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
       items: items ?? this.items,
       subtotal: subtotal ?? this.subtotal,
       tax: tax ?? this.tax,
@@ -96,7 +122,7 @@ class Order {
 
   @override
   String toString() {
-    return 'Order(items: $items, subtotal: $subtotal, tax: $tax, total: $total)';
+    return 'Order(items: $items, subtotal: $subtotal, tax: $tax, total: $total, invoiceNumber: $invoiceNumber, date: $date, paymentMethod: $paymentMethod)';
   }
 }
 

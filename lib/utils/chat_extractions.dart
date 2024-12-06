@@ -69,7 +69,7 @@ Future<Order> processReceipt(
       {
         "invoice_number": "Invoice Number",
         "date": "Date",
-        "payment_method":"Payment Method",
+        "payment_method":"PAYMENT METHOD",
         "items": [
           {
             "name": "Item Name",

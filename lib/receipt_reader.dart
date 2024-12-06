@@ -272,6 +272,28 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
     return const Text('Please upload a receipt to extract data');
   }
 
+  Widget _buildOrderInro() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Subtotal: \$${_extractedOrder!.invoiceNumber}',
+          style: widget.orderSummaryTextStyle,
+        ),
+        Text(
+          'Tax: \$${_extractedOrder!.date}',
+          style: widget.orderSummaryTextStyle,
+        ),
+        Text(
+          'Total: \$${_extractedOrder!.paymentMethod.toUpperCase()}',
+          style: widget.orderSummaryTextStyle
+                  ?.copyWith(fontWeight: FontWeight.bold) ??
+              const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
   Widget _buildOrderItemsList() {
     return ListView.builder(
       shrinkWrap: true,
