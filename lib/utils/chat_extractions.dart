@@ -12,6 +12,9 @@ import 'package:receipt_reader/models/order.dart';
 /// The AI expects the data in the following JSON format:
 /// ```json
 /// {
+///   "invoice_number": "Invoice Number",
+///   "date": "Date",
+///   "payment_method":"Payment Method",
 ///   "items": [
 ///     {
 ///       "name": "Item Name",
@@ -58,12 +61,15 @@ Future<Order> processReceipt(
     }
 
     String prompt = """
-      Extract the items, their quantity, price, subtotal, total, and tax from the following receipt:
-      $receiptText And give each item a category strictly from this list of categories $categories 
+      Extract the invoice number, date, payment method, items, their quantity, price, subtotal, total, and tax from the following receipt:
+      $receiptText And give each item a category strictly from this list of categories $categories. If the invoice number, payment method, date, can't be extracted please put the string "UNKNOWN"
 
       Please return the response in the following JSON format:
       ```json
       {
+        "invoice_number": "Invoice Number",
+        "date": "Date",
+        "payment_method":"Payment Method",
         "items": [
           {
             "name": "Item Name",
