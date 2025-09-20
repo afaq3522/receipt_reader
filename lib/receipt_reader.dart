@@ -148,15 +148,18 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   Widget build(BuildContext context) {
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildImagePreview(),
-          const SizedBox(height: 16),
-          _buildProcessingSection(),
-          const SizedBox(height: 16),
-          _buildActionButtons(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildImagePreview(),
+            const SizedBox(height: 16),
+            _buildProcessingSection(),
+            const SizedBox(height: 16),
+            _buildActionButtons(),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -205,6 +208,8 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
             style: widget.extractedDataTextStyle ??
                 const TextStyle(fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 8),
+          _buildVendor(),
           const SizedBox(height: 8),
           _buildOrderItemsList(),
           const SizedBox(height: 16),
@@ -272,40 +277,22 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
     return const Text('Please upload a receipt to extract data');
   }
 
-  Widget _buildOrderInro() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Subtotal: \$${_extractedOrder!.invoiceNumber}',
-          style: widget.orderSummaryTextStyle,
-        ),
-        Text(
-          'Tax: \$${_extractedOrder!.date}',
-          style: widget.orderSummaryTextStyle,
-        ),
-        Text(
-          'Total: \$${_extractedOrder!.paymentMethod.toUpperCase()}',
-          style: widget.orderSummaryTextStyle
-                  ?.copyWith(fontWeight: FontWeight.bold) ??
-              const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
+  Widget _buildVendor(){
+    return Text("Vendor: ${_extractedOrder?.vendorName??"N/A"}");
   }
 
   Widget _buildOrderItemsList() {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _extractedOrder?.items.length ?? 0,
+      itemCount: _extractedOrder?.items?.length ?? 0,
       itemBuilder: (context, index) {
-        final item = _extractedOrder!.items[index];
+        final item = _extractedOrder?.items?[index];
         return ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text(item.name),
-          subtitle: Text('Quantity: ${item.quantity}'),
-          trailing: Text('\$${item.price.toStringAsFixed(2)}'),
+          title: Text(item?.name??""),
+          subtitle: Text('Quantity: ${item?.quantity??0}'),
+          trailing: Text('\$${item?.price.toStringAsFixed(2)??0}'),
         );
       },
     );
@@ -316,15 +303,15 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Subtotal: \$${_extractedOrder!.subtotal.toStringAsFixed(2)}',
+          'Subtotal: \$${_extractedOrder?.subtotal?.toStringAsFixed(2)}',
           style: widget.orderSummaryTextStyle,
         ),
         Text(
-          'Tax: \$${_extractedOrder!.tax.toStringAsFixed(2)}',
+          'Tax: \$${_extractedOrder?.tax?.toStringAsFixed(2)}',
           style: widget.orderSummaryTextStyle,
         ),
         Text(
-          'Total: \$${_extractedOrder!.total.toStringAsFixed(2)}',
+          'Total: \$${_extractedOrder?.total?.toStringAsFixed(2)}',
           style: widget.orderSummaryTextStyle
                   ?.copyWith(fontWeight: FontWeight.bold) ??
               const TextStyle(fontWeight: FontWeight.bold),

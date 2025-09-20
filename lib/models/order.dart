@@ -18,25 +18,28 @@
 /// ```
 class Order {
   /// This is the method used to make the transaction and always in upper case
-  String paymentMethod;
+  String? paymentMethod;
 
   ///invoice number, this is the unique number of the transaction
-  String invoiceNumber;
+  String? invoiceNumber;
 
   ///The date of the transaction
-  String date;
+  String? date;
 
   /// The list of items in the order.
-  List<Item> items;
+  List<Item>? items;
 
   /// The subtotal amount before tax.
-  double subtotal;
+  double? subtotal;
 
   /// The amount of tax applied to the order.
-  double tax;
+  double? tax;
 
   /// The final total amount after tax.
-  double total;
+  double? total;
+
+  ///find the vendorName of receipt
+  String? vendorName;
 
   /// Creates a new [Order] object with the given [items], [subtotal], [tax], and [total].
   Order({
@@ -47,6 +50,7 @@ class Order {
     required this.subtotal,
     required this.tax,
     required this.total,
+     this.vendorName
   });
 
   /// Converts a JSON object into an [Order] object.
@@ -78,6 +82,7 @@ class Order {
       subtotal: json['subtotal'].toDouble(),
       tax: json['tax'].toDouble(),
       total: json['total'].toDouble(),
+      vendorName: json['vendor_name'],
     );
   }
 
@@ -86,13 +91,14 @@ class Order {
   /// The resulting JSON will follow the same format as required by [Order.fromJson].
   Map<String, dynamic> toJson() {
     return {
-      'items': items.map((item) => item.toJson()).toList(),
+      'items': items?.map((item) => item.toJson()).toList(),
       'subtotal': subtotal,
       'tax': tax,
       'total': total,
       'invoice_number': invoiceNumber,
       'date': date,
-      'payment_method': paymentMethod.toUpperCase(),
+      'vendor_name': vendorName,
+      'payment_method': paymentMethod?.toUpperCase(),
     };
   }
 
@@ -106,6 +112,7 @@ class Order {
     double? tax,
     double? total,
     String? invoiceNumber,
+    String? vendorName,
     String? date,
     String? paymentMethod,
   }) {
@@ -117,6 +124,7 @@ class Order {
       subtotal: subtotal ?? this.subtotal,
       tax: tax ?? this.tax,
       total: total ?? this.total,
+      vendorName: vendorName ?? this.vendorName,
     );
   }
 

@@ -61,12 +61,13 @@ Future<Order> processReceipt(
     }
 
     String prompt = """
-      Extract the invoice number, date, payment method, items, their quantity, price, subtotal, total, and tax from the following receipt:
+      Extract the vendor name, date,  items, their quantity, price, subtotal, total, and total tax from the following receipt:
       $receiptText And give each item a category strictly from this list of categories $categories. If the invoice number, payment method, date, can't be extracted please put the string "UNKNOWN"
 
       Please return the response in the following JSON format:
       ```json
       {
+        "vendor_name": Vendor Name,
         "invoice_number": "Invoice Number",
         "date": "Date",
         "payment_method":"PAYMENT METHOD",

@@ -35,12 +35,12 @@ class ReceiptUploaderScreen extends StatelessWidget {
           // Handle the added order
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Order added: ${order.items.length} items'),
+              content: Text('Order added: ${order.items?.length} items'),
             ),
           );
         },
         geminiApi:
-            '************************************************', // Replace with your API URL
+        'AIzaSyDQ_wYbcLyRScRNbGE_gpIjTugUT4GMWcM', // Replace with your API URL
         listOfCategories: <String>["food", "clothes"],
         actionButtonStyle: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue, // Button color
@@ -52,7 +52,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
           color: Colors.black,
         ),
         extractedDataTextStyle:
-            const TextStyle(fontSize: 14, color: Colors.grey),
+        const TextStyle(fontSize: 14, color: Colors.grey),
         imagePreviewHeight: 250.0,
         padding: const EdgeInsets.all(20.0),
       ),
