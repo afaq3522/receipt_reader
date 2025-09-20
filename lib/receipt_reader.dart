@@ -321,21 +321,24 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   }
 
   Widget _buildActionButtons() {
-    return Wrap(
-      spacing: 10.0, // Spacing between the buttons
-      alignment: WrapAlignment.center,
+    return Row(
       children: [
-        ElevatedButton.icon(
-          onPressed: _getImageFromCamera,
-          icon: const Icon(Icons.camera_alt),
-          label: const Text('Camera'),
-          style: widget.actionButtonStyle,
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _getImageFromCamera,
+            icon: const Icon(Icons.camera_alt),
+            label: const Text('Camera'),
+            style: widget.actionButtonStyle,
+          ),
         ),
-        ElevatedButton.icon(
-          onPressed: _getImageFromGallery,
-          icon: const Icon(Icons.photo),
-          label: const Text('Upload'),
-          style: widget.actionButtonStyle,
+        SizedBox(width: 10,),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _getImageFromGallery,
+            icon: const Icon(Icons.photo),
+            label: const Text('Upload'),
+            style: widget.actionButtonStyle,
+          ),
         ),
       ],
     );
