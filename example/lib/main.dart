@@ -40,7 +40,7 @@ class ReceiptUploaderScreen extends StatelessWidget {
           );
         },
         geminiApi:
-        'AIzaSyDQ_wYbcLyRScRNbGE_gpIjTugUT4GMWcM', // Replace with your API URL
+        '****************************', // Replace with your API URL
         listOfCategories: <String>["food", "clothes"],
         actionButtonStyle: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue, // Button color
