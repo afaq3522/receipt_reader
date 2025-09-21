@@ -13,7 +13,7 @@ import 'utils/chat_extractions.dart';
 /// Gemini API to process the receipt data.
 class ReceiptUploader extends StatefulWidget {
   /// Callback function to handle the `Order` object once the receipt data is processed.
-  final void Function(Order) onAdd;
+  final void Function(Order?,XFile?) onAdd;
 
   /// API key for Gemini AI used to extract data from the receipt.
   final String geminiApi;
@@ -216,7 +216,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
           _buildOrderSummary(),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => widget.onAdd(_extractedOrder!),
+            onPressed: () => widget.onAdd(_extractedOrder,_receiptImage),
             style: widget.actionButtonStyle,
             child: const Text('Add Order'),
           ),

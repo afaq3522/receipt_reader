@@ -31,11 +31,11 @@ class ReceiptUploaderScreen extends StatelessWidget {
         title: const Text('Upload Receipt'),
       ),
       body: ReceiptUploader(
-        onAdd: (Order order) {
+        onAdd: (Order? order,_) {
           // Handle the added order
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Order added: ${order.items?.length} items'),
+              content: Text('Order added: ${order?.items?.length} items'),
             ),
           );
         },
