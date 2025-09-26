@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image_picker/image_picker.dart';
 import 'models/order.dart';
 import 'utils/chat_extractions.dart';
 
@@ -13,7 +12,7 @@ import 'utils/chat_extractions.dart';
 /// Gemini API to process the receipt data.
 class ReceiptUploader extends StatefulWidget {
   /// Callback function to handle the `Order` object once the receipt data is processed.
-  final void Function(Order?,XFile?) onAdd;
+  final void Function(Order?,File?) onAdd;
 
   /// API key for Gemini AI used to extract data from the receipt.
   final String geminiApi;
@@ -54,6 +53,8 @@ class ReceiptUploader extends StatefulWidget {
   /// Custom button style for the "Try Again" button shown when an error occurs.
   final ButtonStyle? errorButtonStyle;
 
+  final File receipt;
+
   const ReceiptUploader({
     super.key,
     required this.onAdd,
@@ -69,7 +70,7 @@ class ReceiptUploader extends StatefulWidget {
     this.padding,
     this.errorBoxStyle,
     this.errorTextStyle,
-    this.errorButtonStyle,
+    this.errorButtonStyle, required this.receipt,
   });
 
   @override
@@ -77,9 +78,8 @@ class ReceiptUploader extends StatefulWidget {
 }
 
 class _ReceiptUploaderState extends State<ReceiptUploader> {
-  final ImagePicker _picker = ImagePicker();
   final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  XFile? _receiptImage;
+  File? _receiptImage;
   String? _extractedText;
   Order? _extractedOrder;
   bool _isProcessing = false;
@@ -88,7 +88,9 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
   @override
   void initState() {
     super.initState();
+    _receiptImage = widget.receipt;
     _categories = widget.listOfCategories ?? [];
+    _processReceiptImage();
   }
 
   @override
@@ -97,21 +99,7 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
     super.dispose();
   }
 
-  Future<void> _getImageFromCamera() async {
-    final pickedImage = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedImage != null) {
-      setState(() => _receiptImage = pickedImage);
-      await _processReceiptImage();
-    }
-  }
 
-  Future<void> _getImageFromGallery() async {
-    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() => _receiptImage = pickedImage);
-      await _processReceiptImage();
-    }
-  }
 
   Future<void> _processReceiptImage() async {
     if (_receiptImage == null) return;
@@ -155,8 +143,6 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
             _buildImagePreview(),
             const SizedBox(height: 16),
             _buildProcessingSection(),
-            const SizedBox(height: 16),
-            _buildActionButtons(),
             const SizedBox(height: 16),
           ],
         ),
@@ -315,30 +301,6 @@ class _ReceiptUploaderState extends State<ReceiptUploader> {
           style: widget.orderSummaryTextStyle
                   ?.copyWith(fontWeight: FontWeight.bold) ??
               const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: _getImageFromCamera,
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Camera'),
-            style: widget.actionButtonStyle,
-          ),
-        ),
-        SizedBox(width: 10,),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: _getImageFromGallery,
-            icon: const Icon(Icons.photo),
-            label: const Text('Upload'),
-            style: widget.actionButtonStyle,
-          ),
         ),
       ],
     );
